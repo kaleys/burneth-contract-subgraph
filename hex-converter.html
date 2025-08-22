@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔄 字符串与16进制转换器 - 区块链交易工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .converter-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #FF6B6B;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .input-area {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-area:focus {
+            outline: none;
+            border-color: #4ECDC4;
+            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #4ECDC4, #6ED7D3);
+            color: white;
+        }
+
+        .btn-clear {
+            background: linear-gradient(135deg, #95a5a6, #bdc3c7);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .output-section {
+            background: #e8f5e8;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #27ae60;
+        }
+
+        .output-title {
+            font-weight: 600;
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .output-content {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            word-break: break-all;
+            min-height: 60px;
+            border: 1px solid #d5eddb;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #3498db, #5dade2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .info-box h3 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-box li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .info-box li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .example-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .example-title {
+            color: #856404;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .example-code {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            border-left: 3px solid #ffc107;
+        }
+
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                flex: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 字符串与16进制转换器</h1>
+            <p>区块链交易数据处理工具 • 支持中英文 • 即时转换</p>
+        </div>
+
+        <div class="main-content">
+            <!-- 字符串转16进制 -->
+            <div class="converter-section">
+                <h2 class="section-title">
+                    📝 字符串转16进制
+                </h2>
+                
+                <div class="input-group">
+                    <label for="stringInput">输入字符串 (支持中英文):</label>
+                    <textarea 
+                        id="stringInput" 
+                        class="input-area" 
+                        placeholder="请输入要转换的字符串，例如：Hello World 或 你好世界"
+                    ></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="stringToHex()">
+                        🔄 转换为16进制
+                    </button>
+                    <button class="btn btn-clear" onclick="clearStringInput()">
+                        🗑️ 清空
+                    </button>
+                </div>
+
+                <div class="output-section">
+                    <div class="output-title">16进制输出 (含0x前缀):</div>
+                    <div id="hexOutput" class="output-content"></div>
+                    <button class="copy-btn" onclick="copyToClipboard('hexOutput')">📋 复制</button>
+                </div>
+            </div>
+
+            <!-- 16进制转字符串 -->
+            <div class="converter-section">
+                <h2 class="section-title">
+                    🔢 16进制转字符串
+                </h2>
+                
+                <div class="input-group">
+                    <label for="hexInput">输入16进制 (可带或不带0x前缀):</label>
+                    <textarea 
+                        id="hexInput" 
+                        class="input-area" 
+                        placeholder="请输入16进制数据，例如：0x48656c6c6f20576f726c64 或 48656c6c6f20576f726c64"
+                    ></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="hexToString()">
+                        🔄 转换为字符串
+                    </button>
+                    <button class="btn btn-clear" onclick="clearHexInput()">
+                        🗑️ 清空
+                    </button>
+                </div>
+
+                <div class="output-section">
+                    <div class="output-title">字符串输出:</div>
+                    <div id="stringOutput" class="output-content"></div>
+                    <button class="copy-btn" onclick="copyToClipboard('stringOutput')">📋 复制</button>
+                </div>
+            </div>
+
+            <!-- 使用说明 -->
+            <div class="info-box">
+                <h3>🔗 区块链交易应用场景</h3>
+                <ul>
+                    <li>在以太坊交易中添加备注信息 (transaction data 字段)</li>
+                    <li>智能合约函数调用时传递字符串参数</li>
+                    <li>NFT metadata 和描述信息编码</li>
+                    <li>多签钱包交易备注</li>
+                    <li>DApp 中的消息和标签处理</li>
+                </ul>
+            </div>
+
+            <!-- 示例 -->
+            <div class="example-section">
+                <div class="example-title">💡 使用示例</div>
+                <div class="example-code">
+                    <strong>字符串:</strong> "BurnETH Transaction"<br>
+                    <strong>16进制:</strong> 0x4275726e45544820547261736e73616374696f6e<br><br>
+                    <strong>字符串:</strong> "燃烧代币"<br>
+                    <strong>16进制:</strong> 0xe7878ee783a7e4bba3e5b881
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 字符串转16进制
+        function stringToHex() {
+            const input = document.getElementById('stringInput').value;
+            const output = document.getElementById('hexOutput');
+            
+            if (!input.trim()) {
+                output.textContent = '请先输入字符串';
+                return;
+            }
+            
+            try {
+                // 使用UTF-8编码
+                const encoder = new TextEncoder();
+                const bytes = encoder.encode(input);
+                const hex = '0x' + Array.from(bytes)
+                    .map(byte => byte.toString(16).padStart(2, '0'))
+                    .join('');
+                
+                output.textContent = hex;
+            } catch (error) {
+                output.textContent = '转换错误: ' + error.message;
+            }
+        }
+
+        // 16进制转字符串
+        function hexToString() {
+            const input = document.getElementById('hexInput').value.trim();
+            const output = document.getElementById('stringOutput');
+            
+            if (!input) {
+                output.textContent = '请先输入16进制数据';
+                return;
+            }
+            
+            try {
+                // 移除0x前缀（如果有）
+                const cleanHex = input.replace(/^0x/i, '');
+                
+                // 验证是否为有效的16进制
+                if (!/^[0-9a-fA-F]*$/.test(cleanHex)) {
+                    throw new Error('无效的16进制格式');
+                }
+                
+                // 确保是偶数长度
+                const paddedHex = cleanHex.length % 2 === 0 ? cleanHex : '0' + cleanHex;
+                
+                // 转换为字节数组
+                const bytes = new Uint8Array(paddedHex.match(/.{2}/g).map(byte => parseInt(byte, 16)));
+                
+                // 使用UTF-8解码
+                const decoder = new TextDecoder('utf-8');
+                const result = decoder.decode(bytes);
+                
+                output.textContent = result;
+            } catch (error) {
+                output.textContent = '转换错误: ' + error.message;
+            }
+        }
+
+        // 清空输入
+        function clearStringInput() {
+            document.getElementById('stringInput').value = '';
+            document.getElementById('hexOutput').textContent = '';
+        }
+
+        function clearHexInput() {
+            document.getElementById('hexInput').value = '';
+            document.getElementById('stringOutput').textContent = '';
+        }
+
+        // 复制到剪贴板
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            if (!text || text === '请先输入字符串' || text === '请先输入16进制数据') {
+                alert('没有可复制的内容');
+                return;
+            }
+            
+            navigator.clipboard.writeText(text).then(() => {
+                // 临时改变按钮文本
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = '✅ 已复制';
+                button.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 1500);
+            }).catch(err => {
+                // 如果剪贴板API不可用，使用fallback方法
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('内容已复制到剪贴板');
+                } catch (err) {
+                    alert('复制失败，请手动复制');
+                }
+                document.body.removeChild(textArea);
+            });
+        }
+
+        // 支持Enter键快速转换
+        document.getElementById('stringInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                stringToHex();
+            }
+        });
+
+        document.getElementById('hexInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                hexToString();
+            }
+        });
+
+        // 页面加载完成后添加一些示例
+        window.onload = function() {
+            // 可以在这里添加一些默认示例
+            console.log('🔄 字符串与16进制转换器已加载');
+            console.log('支持中英文字符串与16进制的相互转换');
+        };
+    </script>
+</body>
+</html>
